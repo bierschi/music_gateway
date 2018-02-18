@@ -68,4 +68,8 @@ fabric.properties
 /**/.idea/vcs.xml
 /**/__pycache__/**
 
+#Project
+/**/music/songs/**
+/**/music/mpd.log
+
 
