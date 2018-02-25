@@ -1,5 +1,7 @@
 import json
 from time import sleep
+from src.player.control_mpd import ControlMPD
+from src.player.connect_mpd import ConnectMPD
 try:
     import paho.mqtt.client as mqtt
 except ImportError as e:
@@ -58,6 +60,8 @@ class MQTT(mqtt.Client):
         self.client.on_publish = self.on_publish
         self.client.on_subscribe = self.on_subscribe
         self.client.on_unsubscribe = self.on_unsubscribe
+        # create mpdclient
+        self.mpdclient = ConnectMPD("localhost", 6600)
 
     def __del__(self):
         """
@@ -217,6 +221,7 @@ class MQTT(mqtt.Client):
             json_string = self.__create_json_string(msg)
         except TypeError as e:
             print(str(e))
+            return None
 
         pub_topics = self.get_pub_topics()
         if topic_name is None:
@@ -252,6 +257,9 @@ class MQTT(mqtt.Client):
         :return:
         """
         print("topic:{}, msg: {}".format(topic, msg))
+
+        if topic == 'music_gateway/sub/song_control':
+            ControlMPD(self.mpdclient, msg)
 
 # CALLBACKS
 
