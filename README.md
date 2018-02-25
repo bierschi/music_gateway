@@ -1,8 +1,18 @@
 # Music Gateway
 
+A repository to control music over mobile network with the MQTT protocol
 
 
-## Electrical Circuit
+
+
+## Windows
+
+## Linux
+
+## MAC OS
+
+
+## Electrical Circuit for Raspberry Pi
 
 
 
@@ -26,6 +36,7 @@
         gsm.py
         mqtt.py
     /player
+        load_mpd.py
         mpd_connection.py
 
 /test
