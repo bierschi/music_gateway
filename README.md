@@ -30,14 +30,16 @@ A repository to control music over mobile network with the MQTT protocol
 
 /scripts
     music_gateway.sh
+
 /src
     /communication
         gps.py
         gsm.py
         mqtt.py
     /player
+        connect_mpd.py
+        control_mpd.py
         load_mpd.py
-        mpd_connection.py
 
 /test
     test_gps.py
