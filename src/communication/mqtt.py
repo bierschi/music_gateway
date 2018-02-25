@@ -1,6 +1,6 @@
 import json
 from time import sleep
-from src.player.control_mpd import ControlMPD
+from src.player.control_mpd import ControlMPD, FindInDatabase
 from src.player.connect_mpd import ConnectMPD
 try:
     import paho.mqtt.client as mqtt
@@ -260,6 +260,8 @@ class MQTT(mqtt.Client):
 
         if topic == 'music_gateway/sub/song_control':
             ControlMPD(self.mpdclient, msg)
+        if topic == 'music_gateway/sub/find_song':
+            FindInDatabase(self.mpdclient, json.loads(msg))
 
 # CALLBACKS
 
