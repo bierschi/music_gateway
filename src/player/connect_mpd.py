@@ -234,17 +234,17 @@ class ConnectMPD:
             raise TypeError("'search_str' must be Type of String")
 
 # QUERYING USEFUL INFORMATION
-    def is_playing(self):
+
+    def get_all_songs_in_db(self):
         """
-        displays the song info of the current song
+
+        :return:
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
 
-        states = self.get_player_status()
-        player_state = states.get('state')
-
-        return player_state == 'play'
+        #return [files.get('file') for files in self.client.listall()]
+        return self.client.listallinfo()
 
     def get_current_song(self):
         """
@@ -535,7 +535,8 @@ class ConnectMPD:
 
 if __name__ == "__main__":
     print("test")
-    #mpdclient = ControlMPD("192.168.178.37", 6600)
+    mpdclient = ConnectMPD("localhost", 6600)
+    print(mpdclient.get_all_songs_in_db())
     #mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
     #print(mpdclient.get_current_song_playlist())
