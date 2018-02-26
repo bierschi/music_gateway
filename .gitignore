@@ -71,5 +71,6 @@ fabric.properties
 #Project
 /**/music/songs/**
 /**/music/mpd.log
+/**/music/mpd.db
 
 
