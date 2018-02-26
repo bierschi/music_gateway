@@ -55,9 +55,12 @@ class LoadMPD:
         """
         music_directory = os.path.join(base_path, 'music\songs')
         playlist_directory = os.path.join(base_path, 'music\\radio_playlists')
-        mpd_log_path = os.path.join(base_path, 'music\mpd.log')
-        mpd_db_path = os.path.join(base_path, 'music\mpd.db')
         mpd_conf_path = os.path.join(base_path, 'music\mpd.conf')
+
+        mpd_log_path = os.path.join(base_path, 'music\mpd.log')
+        mpd_log_path = '/'.join(mpd_log_path.split('\\'))
+        mpd_db_path = os.path.join(base_path, 'music\mpd.db')
+        mpd_db_path = '/'.join(mpd_db_path.split('\\'))
 
         if not os.path.exists(mpd_log_path):
             open(mpd_log_path, 'w')
