@@ -23,10 +23,7 @@ A repository to control music over mobile network with the MQTT protocol
         .m3u files
     /songs
         folder_for_songs
-    mpd.conf
-    mpd.db
     mpd.exe
-    mpd.log
 
 /scripts
     music_gateway.sh
@@ -44,8 +41,10 @@ A repository to control music over mobile network with the MQTT protocol
 /test
     test_gps.py
     test_gsm.py
-    test_mpd_connection.py
     test_mqtt.py
+    test_connect_mpd.py
+    test_control_mpd.py
+    test_load_mpd.py
 
 LICENSE
 music_gateway.py
