@@ -9,7 +9,7 @@ class LoadMPD:
 
     def __init__(self):
         """
-        constructor to init variables and call the self.get_os() method
+        constructor to init variables and call the self.find_os() method
         """
         self.mpd_pid = None
         self.system = platform.system()
