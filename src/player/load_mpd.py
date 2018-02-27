@@ -12,21 +12,23 @@ class LoadMPD:
         constructor to init variables and call the self.get_os() method
         """
         self.mpd_pid = None
-        self.get_os()
+        self.system = platform.system()
+        self.machine = platform.machine()
+
+        self.find_os()
 
     def __del__(self):
         """
         destructor
         """
 
-    def get_os(self):
+    def find_os(self):
         """
-        depending on the machine load the correct mpd server
+        depending on the system and machine load the correct mpd server
         """
         base_path = os.path.abspath(os.path.dirname(""))
-        system, machine = platform.system(), platform.machine()
 
-        if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+        if self.system == "Windows" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             self.create_files(base_path)
             mpd_exe_path = os.path.join(base_path, "music\mpd.exe")
             mpd_conf_path = os.path.join(base_path, "music\mpd.conf")
@@ -38,14 +40,18 @@ class LoadMPD:
             else:
                 print("mpd.exe is running")
 
-        """  
-        elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-            flac_converter = os.path.join(base_path, "flac-linux-x86")
-         
+        elif self.system == "Linux" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+            if not self.is_mpd_running_linux():
+                self.start_mpd_linux()
+            else:
+                print("mpd already running")
+
+        """
         elif system == "Darwin" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             flac_converter = os.path.join(base_path, "flac-mac")
 
         """
+    # Windows machines
 
     def create_files(self, base_path):
         """
@@ -85,7 +91,7 @@ class LoadMPD:
     @staticmethod
     def is_mpd_running():
         """
-        checks if a mpd.exe is already running
+        checks if the mpd server is already running
 
         :return: "False" if no mpd.exe is running
         """
@@ -109,11 +115,34 @@ class LoadMPD:
         if self.mpd_pid is not None:
             os.kill(self.mpd_pid, signal.SIGTERM)
 
+    # linux machines
+
+    @staticmethod
+    def is_mpd_running_linux():
+        """
+        checks if the mpd server is already running
+        :return:
+        """
+        return "mpd" in (p.name() for p in psutil.process_iter())
+
     def start_mpd_linux(self):
         """
 
         :return:
         """
+        p = subprocess.Popen(["apt", "list", "mpd"], stdout=subprocess.PIPE)
+        outs, errs = p.communicate()
+        if errs is None:
+            if b"installed" in outs:
+                print("mpd package is installed")
+                if not self.is_mpd_running_linux():
+                    print("start mpd service")
+                    subprocess.call(["sudo", "service", "mpd", "start"])
+            else:
+                print("install package mpd")
+                subprocess.call(["sudo", "apt-get", "install", "mpd"])
+        else:
+            print("errs")
 
         #self.mpd_pid = subprocess.Popen([mpd_exe_path, mpd_conf_path], creationflags=DETACHED_PROCESS).pid
 
