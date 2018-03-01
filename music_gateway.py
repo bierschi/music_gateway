@@ -3,7 +3,17 @@
 from src.player.load_mpd import LoadMPD
 from src.communication.mqtt import MQTT
 from src.player.connect_mpd import ConnectMPD
+
 from time import sleep
+import logging as log
+
+verbose = True
+
+if verbose:
+    log.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s     -     FUNCNAME-FILE: %(funcName)s - "
+                           "%(filename)""s ", level=log.DEBUG)
+else:
+    log.basicConfig(format="%(levelname)s: %(message)s")
 
 
 def music_gateway():
@@ -41,3 +51,4 @@ def music_gateway():
 
 if __name__ == '__main__':
     music_gateway()
+    #test()
