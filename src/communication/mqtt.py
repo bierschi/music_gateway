@@ -1,7 +1,10 @@
-import json
-from time import sleep
 from src.player.control_mpd import ControlMPD, FindInDatabase
 from src.player.connect_mpd import ConnectMPD
+
+import json
+import logging as log
+from time import sleep
+
 try:
     import paho.mqtt.client as mqtt
 except ImportError as e:
@@ -86,6 +89,7 @@ class MQTT(mqtt.Client):
         """
         if self.client is not None:
             try:
+                log.info("connect to broker")
                 self.client.connect(self.host, self.port)
             except (ConnectionError, TimeoutError) as e:
                 print(str(e))
@@ -110,6 +114,7 @@ class MQTT(mqtt.Client):
 
         """
         if 'publish_topics' in kwargs and len(kwargs['publish_topics']) > 0:
+            log.info("add pub_topics")
             for pub_topic in kwargs['publish_topics']:
                 if pub_topic.get('qos') < 0 or pub_topic.get('qos') > 2:
                     pub_topic.update({'topic_name': pub_topic.get('topic_name'), 'qos': 0})
@@ -120,6 +125,7 @@ class MQTT(mqtt.Client):
                     self.pub_topics.append(pub_topic)
 
         if 'subscribe_topics' in kwargs and len(kwargs['subscribe_topics']) > 0:
+            log.info("add sub_topics")
             for sub_topic in kwargs['subscribe_topics']:
                 if sub_topic.get('qos') < 0 or sub_topic.get('qos') > 2:
                     sub_topic.update({'topic_name': sub_topic.get('topic_name'), 'qos': 0})
@@ -138,10 +144,12 @@ class MQTT(mqtt.Client):
 
         """
         if topics is None:
+            log.info("delete all topics")
             self.pub_topics.clear()
             self.sub_topics.clear()
         else:
             if isinstance(topics, list) and len(topics) > 0:
+                log.info("delete only selected topics")
                 for i in range(0, len(topics)):
                     for pub in self.pub_topics:
                         if pub.get('topic_name') == topics[i]:
@@ -158,6 +166,7 @@ class MQTT(mqtt.Client):
 
         """
         if len(self.sub_topics) > 0:
+            log.info("subscribe topics")
             sub_topics = list()
             for sub in self.sub_topics:
                 sub_tuple = sub.get('topic_name'), sub.get('qos')
@@ -174,12 +183,14 @@ class MQTT(mqtt.Client):
 
         """
         if topics is None:
+            log.info("unsubscribe all sub_topics")
             unsub_list = list()
             for sub in self.sub_topics:
                 unsub_list.append(sub.get('topic_name'))
             self.client.unsubscribe(unsub_list)
         else:
             if isinstance(topics, list):
+                log.info("unsubscribe selected sub_topics")
                 self.client.unsubscribe(topics)
 
     def get_sub_topics(self):
@@ -218,6 +229,7 @@ class MQTT(mqtt.Client):
         """
         # build a valid json_string
         try:
+            log.info("create json string")
             json_string = self.__create_json_string(msg)
         except TypeError as e:
             print(str(e))
@@ -225,6 +237,7 @@ class MQTT(mqtt.Client):
 
         pub_topics = self.get_pub_topics()
         if topic_name is None:
+            log.info("send msg to all pub_topics")
             if pub_topics is not None:
                 for pub_topic in pub_topics:
                     self.client.publish(pub_topic.get('topic_name'), json_string)
@@ -232,6 +245,7 @@ class MQTT(mqtt.Client):
                 raise ValueError("No topics for publishing were selected")
         else:
             if isinstance(topic_name, list):
+                log.info("send msg to selected pub_topics")
                 for i in range(0, len(topic_name)):
                     if pub_topics is not None:
                         for pub_topic in pub_topics:
@@ -256,7 +270,7 @@ class MQTT(mqtt.Client):
 
         :return:
         """
-        print("topic:{}, msg: {}".format(topic, msg))
+        log.info("topic:{}, msg: {}".format(topic, msg))
 
         if topic == 'music_gateway/sub/song_control':
             ControlMPD(self.mpdclient, msg)
@@ -322,7 +336,7 @@ class MQTT(mqtt.Client):
         :param granted_qos: The granted_qos variable is a list of integers that give the QoS level the broker has
         granted for each of the different subscription requests
         """
-        print("HiveMQ broker responds the subscribe request")
+        print("Remote broker responds the subscribe request")
 
     def on_unsubscribe(self, client, userdata, mid):
         """
