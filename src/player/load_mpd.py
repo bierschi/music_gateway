@@ -15,7 +15,6 @@ class LoadMPD:
         self.mpd_pid = None
         self.system = platform.system()
         self.machine = platform.machine()
-
         self.find_os()
 
     def __del__(self):
@@ -100,7 +99,7 @@ class LoadMPD:
         """
         checks if the mpd server is already running
 
-        :return: "False" if no mpd.exe is running
+        :return: "False" if no mpd server is running
         """
         return "mpd.exe" in (p.name() for p in psutil.process_iter())
 
@@ -117,10 +116,16 @@ class LoadMPD:
 
     @staticmethod
     def kill_mpd_process_win():
+        """
+        static method to kill all mpd processes on windows machines
 
-        #if self.mpd_pid is not None:
-        #    log.info("kill mpd.exe on windows")
-        #    os.kill(self.mpd_pid, signal.SIGTERM)
+        """
+        print("kill")
+        if platform.system() == "Windows" and platform.machine() in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+            log.info("kill all mpd.exe on windows")
+            mpd_processes = [p.pid for p in psutil.process_iter(attrs=['pid', 'name']) if 'mpd.exe' in p.info['name']]
+            for proc in mpd_processes:
+                os.kill(proc, signal.SIGTERM)
 
     # linux machines
 
@@ -128,7 +133,7 @@ class LoadMPD:
     def is_mpd_running_linux():
         """
         checks if the mpd server is already running
-        :return:
+        :return: "False" if no mpd server is running
         """
         return "mpd" in (p.name() for p in psutil.process_iter())
 
