@@ -3,6 +3,7 @@ import os
 import subprocess
 import signal
 import psutil
+import logging as log
 
 
 class LoadMPD:
@@ -29,22 +30,23 @@ class LoadMPD:
         base_path = os.path.abspath(os.path.dirname(""))
 
         if self.system == "Windows" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-            self.create_files(base_path)
+            log.info("windows system")
+            self.create_files_win(base_path)
             mpd_exe_path = os.path.join(base_path, "music\mpd.exe")
             mpd_conf_path = os.path.join(base_path, "music\mpd.conf")
-            # bsp = os.path.join(os.getcwd(), "music\mpd.exe")
 
-            if not self.is_mpd_running():
-                print("start mpd.exe")
-                self.start_mpd_windows(mpd_exe_path, mpd_conf_path)
+            if not self.is_mpd_running_win():
+                log.info("start mpd.exe")
+                self.start_mpd_win(mpd_exe_path, mpd_conf_path)
             else:
-                print("mpd.exe is running")
+                log.info("mpd.exe is running")
 
         elif self.system == "Linux" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+            log.info("linux system")
             if not self.is_mpd_running_linux():
                 self.start_mpd_linux()
             else:
-                print("mpd already running")
+                log.info("mpd is running")
 
         """
         elif system == "Darwin" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
@@ -53,12 +55,14 @@ class LoadMPD:
         """
     # Windows machines
 
-    def create_files(self, base_path):
+    def create_files_win(self, base_path):
         """
         method to check if mpd.conf, mpd.log, mpd.db are exists. If not, then create these files
 
         :param base_path, path for creating these files
         """
+        log.info("create files for windows machines")
+
         music_directory = os.path.join(base_path, 'music\songs')
         playlist_directory = os.path.join(base_path, 'music\\radio_playlists')
         mpd_conf_path = os.path.join(base_path, 'music\mpd.conf')
@@ -69,10 +73,13 @@ class LoadMPD:
         mpd_db_path = '/'.join(mpd_db_path.split('\\'))
 
         if not os.path.exists(mpd_log_path):
+            log.info("create log file")
             open(mpd_log_path, 'w')
         if not os.path.exists(mpd_db_path):
+            log.info("create db file")
             open(mpd_db_path, 'w')
         if not os.path.exists(mpd_conf_path):
+            log.info("create mpd conf file")
             with open(mpd_conf_path, 'w') as mpd_conf:
                 mpd_conf.writelines("music_directory " + "\"" + music_directory + "\"" + "\n" +
                                     "playlist_directory " + "\"" + playlist_directory + "\"" + "\n" +
@@ -89,7 +96,7 @@ class LoadMPD:
                                     + "    format \"44100:16:1\"" + "\n" + "}")
 
     @staticmethod
-    def is_mpd_running():
+    def is_mpd_running_win():
         """
         checks if the mpd server is already running
 
@@ -97,23 +104,23 @@ class LoadMPD:
         """
         return "mpd.exe" in (p.name() for p in psutil.process_iter())
 
-    def start_mpd_windows(self, mpd_exe_path, mpd_conf_path):
+    def start_mpd_win(self, mpd_exe_path, mpd_conf_path):
         """
         starts the mpd.exe as a background process on windows machines
 
         :param mpd_exe_path: path to the ./mpd.exe file
         :param mpd_conf_path: path to the ./mpd.conf configuration file
         """
+        log.info("start subprocess for mpd.exe")
         DETACHED_PROCESS = 0x00000008
         self.mpd_pid = subprocess.Popen([mpd_exe_path, mpd_conf_path], creationflags=DETACHED_PROCESS).pid
 
-    def kill_mpd_process(self):
-        """
-        method to kill the mpd process with the pid
-        :return:
-        """
-        if self.mpd_pid is not None:
-            os.kill(self.mpd_pid, signal.SIGTERM)
+    @staticmethod
+    def kill_mpd_process_win():
+
+        #if self.mpd_pid is not None:
+        #    log.info("kill mpd.exe on windows")
+        #    os.kill(self.mpd_pid, signal.SIGTERM)
 
     # linux machines
 
@@ -127,22 +134,24 @@ class LoadMPD:
 
     def start_mpd_linux(self):
         """
+        package mpd is being installed, if not already available. After installation mpd process start automatically,
+        if not then mpd service will be started
 
-        :return:
         """
+        log.info("start subprocess for mpd on linux")
         p = subprocess.Popen(["apt", "list", "mpd"], stdout=subprocess.PIPE)
         outs, errs = p.communicate()
         if errs is None:
             if b"installed" in outs:
-                print("mpd package is installed")
+                log.info("mpd package is installed")
                 if not self.is_mpd_running_linux():
-                    print("start mpd service")
+                    log.info("start mpd service on linux")
                     subprocess.call(["sudo", "service", "mpd", "start"])
             else:
-                print("install package mpd")
+                log.info("package mpd is being installed")
                 subprocess.call(["sudo", "apt-get", "install", "mpd"])
         else:
-            print("errs")
+            log.info("error for communicating with the subprocess \"apt list mpd\"")
 
         #self.mpd_pid = subprocess.Popen([mpd_exe_path, mpd_conf_path], creationflags=DETACHED_PROCESS).pid
 
