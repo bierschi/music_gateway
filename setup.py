@@ -16,7 +16,7 @@ setup(
     scripts=['scripts/music_gateway.sh'],
     packages=["music", "src", "src.communication", "src.player", "test"],
     package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
-    install_requires=["psutil", "paho-mqtt", "paho-mqtt", "python-mpd2"],
+    install_requires=["psutil", "paho-mqtt", "python-mpd2"],
     #cmdclass={
     #    'install': PostInstallCommand
     #}
