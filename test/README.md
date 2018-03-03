@@ -4,6 +4,7 @@
 - test_gsm.py
 - test_mqtt.py
 - test_load_mpd.py
-- test_mpd_connection.py
+- test_connect_mpd.py
+- test_control_mpd.py
 
 
