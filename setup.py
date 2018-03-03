@@ -13,8 +13,9 @@ setup(
     author="Bierschneider Christian",
     author_email="christian.bierschneider@web.de",
     py_modules=["music_gateway"],
-    packages=["music", "music.radio_playlists", "music.songs", "scripts", "src", "src.communication", "src.player", "test"],
-    #scripts=[''],
+    scripts=['scripts/music_gateway.sh'],
+    packages=["music", "src", "src.communication", "src.player", "test"],
+    package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
     install_requires=["psutil", "paho-mqtt", "paho-mqtt", "python-mpd2"],
     #cmdclass={
     #    'install': PostInstallCommand
