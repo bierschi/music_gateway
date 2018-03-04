@@ -27,7 +27,7 @@ class LoadMPD:
         depending on the system and machine load the correct mpd server
         """
         base_path = os.path.abspath(os.path.dirname(""))
-
+        print(base_path)
         if self.system == "Windows" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             log.info("windows system")
             self.create_files_win(base_path)
@@ -63,10 +63,13 @@ class LoadMPD:
         log.info("create files for windows machines")
 
         music_directory = os.path.join(base_path, 'music\songs')
+        music_directory = '/'.join(music_directory.split('\\'))
         playlist_directory = os.path.join(base_path, 'music\\radio_playlists')
+        playlist_directory = '/'.join(playlist_directory.split('\\'))
         mpd_conf_path = os.path.join(base_path, 'music\mpd.conf')
 
         mpd_log_path = os.path.join(base_path, 'music\mpd.log')
+        print(mpd_log_path)
         mpd_log_path = '/'.join(mpd_log_path.split('\\'))
         mpd_db_path = os.path.join(base_path, 'music\mpd.db')
         mpd_db_path = '/'.join(mpd_db_path.split('\\'))
