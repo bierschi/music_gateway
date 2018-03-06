@@ -262,7 +262,14 @@ class ConnectMPD:
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
 
-        return self.client.playlist()
+        return [song['file'] for song in self.client.playlistinfo()]
+
+    def get_playlist_info(self):
+        """
+
+        :return:
+        """
+        return self.client.playlistinfo()
 
     def get_player_status(self):
         """
@@ -536,6 +543,7 @@ class ConnectMPD:
 if __name__ == "__main__":
     print("test")
     mpdclient = ConnectMPD("localhost", 6600)
+    print(mpdclient.get_current_song_playlist())
     print(mpdclient.get_all_songs_in_db())
     #mpdclient = ControlMPD("localhost", 6600)
     #print(mpdclient.get_all_artists_in_db())
