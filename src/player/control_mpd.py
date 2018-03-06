@@ -10,45 +10,91 @@ class ControlMPD:
         """
         self.mpdclient = mpdclient
         self.msg = msg
-        if self.msg in {'play', 'stop', 'previous', 'pause', 'next', 'shuffle'}:
-            self.handle_playback(self.msg)
-        elif self.msg in {'random', 'repeat', 'clear', 'update'}:
-            self.handle_playback_option(self.msg)
 
-    def handle_playback(self, msg):
+        if 'action' in self.msg.keys():
+            if self.msg['action'] in {'play', 'stop', 'previous', 'pause', 'next', 'shuffle', 'clear_playlist'}:
+                self.handle_playback(self.msg['action'])
+            elif self.msg['action'] in {'random', 'repeat', 'clear', 'update'}:
+                self.handle_playback_option(self.msg['action'])
+        elif 'desired_song' in self.msg.keys():
+            self.select_song_in_playlist(self.msg['desired_song'])
+
+        elif 'add_song' in self.msg.keys():
+            self.add_song_to_playlist(self.msg['add_song'])
+
+        elif 'delete_song' in self.msg.keys():
+            self.del_song_in_playlist(self.msg['delete_song'])
+
+    def handle_playback(self, action):
         """
         method to handle simple playback option
 
-        :param msg: msg string like 'play', 'stop' ...
+        :param action: msg string like 'play', 'stop' ...
         """
 
-        if msg == 'play':
+        if action == 'play':
             self.mpdclient.play()
-        elif msg == 'stop':
+        elif action == 'stop':
             self.mpdclient.stop()
-        elif msg == 'next':
+        elif action == 'next':
             self.mpdclient.next()
-        elif msg == 'pause':
+        elif action == 'pause':
             self.mpdclient.pause()
-        elif msg == 'previous':
+        elif action == 'previous':
             self.mpdclient.previous()
-        elif msg == 'shuffle':
+        elif action == 'shuffle':
             self.mpdclient.shuffle()
+        elif action == 'clear_playlist':
+            self.mpdclient.clear_current_playlist()
 
-    def handle_playback_option(self, msg):
+    def handle_playback_option(self, action):
         """
         method to handle advanced playback option
 
-        :param msg: msg string like 'random', 'repeat' ...
+        :param action: msg string like 'random', 'repeat' ...
         """
-        if msg == 'random':
+        if action == 'random':
             self.mpdclient.set_random()
-        elif msg == 'repeat':
+        elif action == 'repeat':
             self.mpdclient.set_repeat()
-        elif msg == 'clear':
+        elif action == 'clear':
             self.mpdclient.clear_current_playlist()
-        elif msg == 'update':
+        elif action == 'update':
             self.mpdclient.update_database()
+
+    def select_song_in_playlist(self, desired_song):
+        """
+
+        :return:
+        """
+        for song in self.mpdclient.get_playlist_info():
+            if desired_song == song['file']:
+                pos = song['pos']
+                self.mpdclient.play(songpos=pos)
+                break
+
+    def add_song_to_playlist(self, add_song):
+        """
+
+        :return:
+        """
+        database = self.mpdclient.get_all_songs_in_db()
+        for song in database:
+            if add_song == song['file']:
+                self.mpdclient.add_song_to_playlist(song['file'])
+                break
+
+    def del_song_in_playlist(self, delete_song):
+        """
+
+        :return:
+        """
+        for song in self.mpdclient.get_playlist_info():
+            if delete_song == song['file']:
+                self.mpdclient.delete_song(songid=song['id'])
+                break
+
+
 
 
 class FindInDatabase:
