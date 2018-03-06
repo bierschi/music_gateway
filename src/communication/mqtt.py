@@ -273,7 +273,7 @@ class MQTT(mqtt.Client):
         log.info("topic:{}, msg: {}".format(topic, msg))
 
         if topic == 'music_gateway/sub/song_control':
-            ControlMPD(self.mpdclient, msg)
+            ControlMPD(self.mpdclient, json.loads(msg))
         if topic == 'music_gateway/sub/find_song':
             FindInDatabase(self.mpdclient, json.loads(msg))
 
