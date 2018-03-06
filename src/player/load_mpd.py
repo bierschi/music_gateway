@@ -5,6 +5,8 @@ import signal
 import psutil
 import logging as log
 
+from definitions import ROOT_DIR
+
 
 class LoadMPD:
 
@@ -26,13 +28,12 @@ class LoadMPD:
         """
         depending on the system and machine load the correct mpd server
         """
-        base_path = os.path.abspath(os.path.dirname(""))
-        print(base_path)
+
         if self.system == "Windows" and self.machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             log.info("windows system")
-            self.create_files_win(base_path)
-            mpd_exe_path = os.path.join(base_path, "music\mpd.exe")
-            mpd_conf_path = os.path.join(base_path, "music\mpd.conf")
+            self.create_files_win(ROOT_DIR)
+            mpd_exe_path = os.path.join(ROOT_DIR, "music\mpd.exe")
+            mpd_conf_path = os.path.join(ROOT_DIR, "music\mpd.conf")
 
             if not self.is_mpd_running_win():
                 log.info("start mpd.exe")
@@ -69,7 +70,7 @@ class LoadMPD:
         mpd_conf_path = os.path.join(base_path, 'music\mpd.conf')
 
         mpd_log_path = os.path.join(base_path, 'music\mpd.log')
-        print(mpd_log_path)
+
         mpd_log_path = '/'.join(mpd_log_path.split('\\'))
         mpd_db_path = os.path.join(base_path, 'music\mpd.db')
         mpd_db_path = '/'.join(mpd_db_path.split('\\'))
