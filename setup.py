@@ -21,9 +21,3 @@ setup(
     #    'install': PostInstallCommand
     #}
 )
-
-# Dependencies
-
-# pip3 install psutil
-# pip3 install python-mpd2
-# pip3 install paho-mqtt
