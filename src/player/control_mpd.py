@@ -1,14 +1,15 @@
 
 
-class ControlMPD:
+class ControlMPD():
 
-    def __init__(self, mpdclient, msg):
+    def __init__(self, mqtt_c, mpd_c, msg):
         """
         constructor to handle the mpd playback
         :param mpdclient: instance for the mpd
         :param msg: msg string like 'play', 'stop' ...
         """
-        self.mpdclient = mpdclient
+        self.mqtt = mqtt_c
+        self.mpdclient = mpd_c
         self.msg = msg
 
         if 'action' in self.msg.keys():
@@ -20,10 +21,10 @@ class ControlMPD:
             self.select_song_in_playlist(self.msg['desired_song'])
 
         elif 'add_song' in self.msg.keys():
-            self.add_song_to_playlist(self.msg['add_song'])
+            self.add_song_from_db(self.msg['add_song'])
 
         elif 'delete_song' in self.msg.keys():
-            self.del_song_in_playlist(self.msg['delete_song'])
+            self.del_song_from_playlist(self.msg['delete_song'])
 
     def handle_playback(self, action):
         """
@@ -61,6 +62,7 @@ class ControlMPD:
             self.mpdclient.clear_current_playlist()
         elif action == 'update':
             self.mpdclient.update_database()
+            self.mqtt.publish_msgs(self.mpdclient.get_all_songs_in_db(), topic_name=['music_gateway/pub/database'])
 
     def select_song_in_playlist(self, desired_song):
         """
@@ -73,18 +75,7 @@ class ControlMPD:
                 self.mpdclient.play(songpos=pos)
                 break
 
-    def add_song_to_playlist(self, add_song):
-        """
-
-        :return:
-        """
-        database = self.mpdclient.get_all_songs_in_db()
-        for song in database:
-            if add_song == song['file']:
-                self.mpdclient.add_song_to_playlist(song['file'])
-                break
-
-    def del_song_in_playlist(self, delete_song):
+    def del_song_from_playlist(self, delete_song):
         """
 
         :return:
@@ -93,6 +84,19 @@ class ControlMPD:
             if delete_song == song['file']:
                 self.mpdclient.delete_song(songid=song['id'])
                 break
+
+    def add_song_from_db(self, add_song):
+        """
+
+        :return:
+        """
+        database = self.mpdclient.get_all_songinfos_from_db()
+        for song in database:
+            if add_song == song['file']:
+                self.mpdclient.add_song_to_playlist(song['file'])
+                break
+
+
 
 
 
