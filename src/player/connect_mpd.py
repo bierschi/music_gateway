@@ -8,7 +8,7 @@ class ConnectMPD:
 
     def __init__(self, host, port=None):
         """
-        Creates a MPD client
+        creates a MPD client instance
 
         :param host: hostname for the MPD server
         :param port: port to communicate with the MPD server
@@ -91,7 +91,7 @@ class ConnectMPD:
 
     def create_music_playlist(self):
         """
-        creates the music playlist for all songs the music folder contains
+        creates a music playlist for all songs in database
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -237,18 +237,41 @@ class ConnectMPD:
 
     def get_all_songs_in_db(self):
         """
+        method to get all songs in database
 
-        :return:
+        :return: list containing all songs from database
+
+        ['Axwell _ Ingrosso - On My Way[audio].mp3', 'Axwell Λ Ingrosso - Dreamer (Official Video) feat. Trevor Guthrie.mp3', ]
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
 
-        #return [files.get('file') for files in self.client.listall()]
+        return [files['file'] for files in self.client.listall()]
+
+    def get_all_songinfos_from_db(self):
+        """
+        method to get detailed song infos for all songs in database
+
+        :return: list containing dictionaries with the detailed song infos
+
+        [{'last-modified': '2018-01-21T17:50:15Z', 'title': 'On My Way[audio]', 'time': '261',
+          'file': 'Axwell _ Ingrosso - On My Way[audio].mp3', 'artist': 'Axwell /\\ Ingrosso', 'duration': '260.624'},
+         {'last-modified': '2018-02-01T17:41:19Z', 'title': 'Dreamer (Official Video) feat. Trevor Guthrie', 'time': '234',
+          'file': 'Axwell Λ Ingrosso - Dreamer (Official Video) feat. Trevor Guthrie.mp3', 'artist': 'Axwell Λ Ingrosso', 'duration': '234.371'}]
+        """
+        if not self.connected:
+            raise ConnectionError("mpd client lost the connection")
+
         return self.client.listallinfo()
 
     def get_current_song(self):
         """
         displays the song info of the current song
+
+        :return: dictionary with song info (id, artist, title, time, pos, duration file) of current song
+
+        {'last-modified': '2018-02-27T12:25:10Z', 'title': 'Leave a Light On', 'file': 'Tom Walker - Leave a Light On.mp3',
+         'id': '3', 'time': '186', 'artist': 'Tom Walker', 'pos': '1', 'duration': '186.201'}
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -258,6 +281,10 @@ class ConnectMPD:
     def get_current_song_playlist(self):
         """
         displays the current playlist
+
+        :return: list with all songs in current playlist
+
+        ['The Chainsmokers - Sick Boy.mp3', 'Tom Walker - Leave a Light On.mp3']
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -266,14 +293,25 @@ class ConnectMPD:
 
     def get_playlist_info(self):
         """
+        detailed song infos from the current playlist
 
-        :return:
+        :return: list containing dictionaries with the detailed song infos
+
+        [{'last-modified': '2018-02-17T13:02:16Z', 'title': 'Sick Boy', 'file': 'The Chainsmokers - Sick Boy.mp3',
+          'id': '2', 'time': '218', 'artist': 'The Chainsmokers', 'pos': '0', 'duration': '218.488'},
+         {'last-modified': '2018-02-27T12:25:10Z', 'title': 'Leave a Light On', 'file': 'Tom Walker - Leave a Light On.mp3',
+          'id': '3', 'time': '186', 'artist': 'Tom Walker', 'pos': '1', 'duration': '186.201'}]
         """
         return self.client.playlistinfo()
 
     def get_player_status(self):
         """
         reports the current status of the player and the volume level
+
+        :return: dictionary containing status of player
+
+        {'playlistlength': '2', 'random': '0', 'songid': '3', 'single': '0', 'volume': '-1', 'song': '1',
+         'mixrampdb': '0.000000', 'playlist': '9', 'state': 'stop', 'consume': '0', 'repeat': '0'}
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -294,8 +332,9 @@ class ConnectMPD:
 
     def get_current_songpos(self):
         """
+        method to get the current 'songpos', for selecting desired song in playlist
 
-        :return:
+        :return: int number for the current songpos in playlist
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -332,83 +371,23 @@ class ConnectMPD:
         """
         return [genre.get('genre') for genre in self.client.listallinfo() if genre.get('genre') is not None]
 
-    def is_artist_in_db(self, artist):
-        """
-        boolean method to check, if desired artist is in db available
-
-        :param artist: string, artist to search for
-        :return: True, if artist is available
-                 False, if artist is not available
-        """
-        resp_artist = self.client.find("Artist", artist)
-        if len(resp_artist) > 0:
-            return True
-        else:
-            db_response = self.advanced_search_in_db(search_str=artist, search_type="Artist", s_pos=False)
-            if db_response is None:
-                return False
-            else:
-                if len(db_response) > 0:
-                    return True
-                else:
-                    return False
-
-    def is_title_in_db(self, title):
-        """
-        boolean method to check, if desired title is in db available
-
-        :param title: string, title to search for
-        :return: True, if title is available
-                 False, if title is not available
-        """
-        resp_title = self.client.find("title", title)
-        if len(resp_title) > 0:
-            return True
-        else:
-            db_response = self.advanced_search_in_db(search_str=title, search_type="title", s_pos=False)
-            if db_response is None:
-                return False
-            else:
-                if len(db_response) > 0:
-                    return True
-                else:
-                    return False
-
-    def is_genre_in_db(self, genre):
-        """
-        boolean method to check, if desired genre is in db available
-
-        :param genre: string, genre to search for
-        :return: True, if genre is available
-                 False, if genre is not available
-        """
-        resp_genre = self.client.find("genre", genre)
-        if len(resp_genre) > 0:
-            return True
-        else:
-            db_response = self.advanced_search_in_db(search_str=genre, search_type="genre", s_pos=False)
-            if db_response is None:
-                return False
-            else:
-                if len(db_response) > 0:
-                    return True
-                else:
-                    return False
 
 # CURRENT PLAYLIST
 
     def add_song_to_playlist(self, song):
         """
+        add 'song' to current playlist
 
-        :param song:
-        :return:
+        :param song: song string
         """
         if isinstance(song, str):
             self.client.add(song)
+        else:
+            raise TypeError("song must be type of string")
 
     def clear_current_playlist(self):
         """
-        clears the current playlist
+        clears current playlist
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -419,7 +398,8 @@ class ConnectMPD:
     def delete_song(self, songid=None):
         """
         deletes a song from the playlist
-        :param songid:
+
+        :param songid: deletes song with "songid"
         """
         if not self.connected:
             raise ConnectionError("mpd client lost the connection")
@@ -539,14 +519,17 @@ class ConnectMPD:
             else:
                 print("not playing")
 
+    def test(self):
+        all_songs = self.get_all_songs_in_db()
+        with open("Lieder.txt", 'w', encoding='utf-8') as file:
+            for song in all_songs:
+                file.writelines(song['file'] + "\n")
+
 
 if __name__ == "__main__":
     print("test")
     mpdclient = ConnectMPD("localhost", 6600)
-    print(mpdclient.get_current_song_playlist())
-    print(mpdclient.get_all_songs_in_db())
-    #mpdclient = ControlMPD("localhost", 6600)
-    #print(mpdclient.get_all_artists_in_db())
     #print(mpdclient.get_current_song_playlist())
-
+    #print(mpdclient.get_all_songs_in_db())
+    #mpdclient.test()
     #mpdclient.stop()
