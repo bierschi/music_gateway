@@ -48,9 +48,6 @@ def music_gateway():
         current_song = mpdclient.get_current_song()
         mqtt.publish_msgs({'current_song': current_song, 'song_playlist': song_playlist, 'player_status': player_status},
                           topic_name=['music_gateway/pub/playback'])
-        #mqtt.publish_msgs(song_playlist, topic_name=['music_gateway/pub/song_playlist'])
-        #mqtt.publish_msgs(player_status, topic_name=['music_gateway/pub/player_status'])
-        #mqtt.publish_msgs(current_song,  topic_name=['music_gateway/pub/current_song'])
         sleep(1)
 
 
