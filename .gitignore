@@ -73,5 +73,5 @@ fabric.properties
 /**/music/mpd.log
 /**/music/mpd.db
 /**/music/mpd.conf
-
+/**/.pytest_cache/**
 
