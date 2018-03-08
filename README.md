@@ -2,8 +2,47 @@
 
 A repository to control music over mobile network with the MQTT protocol
 
+## Current Status / Testing
 
+Download a mqtt client like MQTT.FX http://mqttfx.jensd.de/index.php/download
 
+##### Subscribe following `publish_topics` to see all songs in database and the current playback state
+
+publish_topics:
+- `music_gateway/pub/database` <br>
+- `music_gateway/pub/playback`
+
+##### Publish the following actions on this topic:
+
+subscribe_topics:
+- `music_gateway/sub/song_control`
+
+<pre><code>
+{"action": "play"}
+{"action": "stop"}
+{"action": "next"}
+{"action": "previous"}
+{"action": "pause"}
+{"action": "shuffle"}
+{"action": "clear_playlist"}
+{"action": "random"}
+{"action": "repeat"}
+{"action": "update"}
+
+{"desired_song": "Nano - Hold On(Official Audio).mp3"}
+{"add_song": "Nano - Hold On(Official Audio).mp3"}
+{"delete_song": "Nano - Hold On(Official Audio).mp3"}
+</pre></code>
+
+`add_song`: adds a song from the database into current playlist, song must available in `music_gateway/pub/database`
+
+`desired_song`: select a song from the current playlist
+
+`delete_song`: deletes a song from the current playlist
+
+<br>
+
+**commands will later be replaced by an APP!**
 
 ## Windows
 
@@ -48,6 +87,8 @@ A repository to control music over mobile network with the MQTT protocol
 
 LICENSE
 music_gateway.py
+definitions.py
 README.md
+requirements.txt
 setup.py
 </pre></code>
