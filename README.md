@@ -30,6 +30,8 @@ publish_topics:
 subscribe_topics:
 - `music_gateway/sub/song_control`
 
+This commands are working:
+
 <pre><code>
 {"action": "play"}
 {"action": "stop"}
