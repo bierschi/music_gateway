@@ -6,13 +6,13 @@ A repository to control music over mobile network with the MQTT protocol
 
 Download a mqtt client like MQTT.FX http://mqttfx.jensd.de/index.php/download
 
-##### Subscribe following `publish_topics` to see all songs in database and the current playback state
+#### Subscribe following `publish_topics` to see all songs in database and the current playback state
 
 publish_topics:
 - `music_gateway/pub/database` <br>
 - `music_gateway/pub/playback`
 
-##### Publish the following actions on this topic:
+#### Publish the following actions on this topic:
 
 subscribe_topics:
 - `music_gateway/sub/song_control`
@@ -36,7 +36,7 @@ subscribe_topics:
 
 `add_song`: adds a song from the database into current playlist, song must available in `music_gateway/pub/database`
 
-`desired_song`: select a song from the current playlist
+`desired_song`: select the desired song from the current playlist
 
 `delete_song`: deletes a song from the current playlist
 
