@@ -58,8 +58,6 @@ class ControlMPD():
             self.mpdclient.set_random()
         elif action == 'repeat':
             self.mpdclient.set_repeat()
-        elif action == 'clear':
-            self.mpdclient.clear_current_playlist()
         elif action == 'update':
             self.mpdclient.update_database()
             self.mqtt.publish_msgs(self.mpdclient.get_all_songs_in_db(), topic_name=['music_gateway/pub/database'])
