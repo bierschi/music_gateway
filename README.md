@@ -2,6 +2,19 @@
 
 A repository to control music over mobile network with the MQTT protocol
 
+## Usage
+clone this repository:
+
+`git clone https://github.com/bierschi/music_gateway.git`
+
+install the project with `setup.py`:
+
+`python3 setup.py install`
+
+Windows (python version 3.5):
+
+`py -3.5 setup.py install`
+
 ## Current Status / Testing
 
 Download a mqtt client like MQTT.FX http://mqttfx.jensd.de/index.php/download
