@@ -28,8 +28,7 @@ def music_gateway():
     mqtt.add_topics(publish_topics=[{"topic_name": "music_gateway/pub/database", "qos": 0},
                                     {"topic_name": "music_gateway/pub/playback", "qos": 0}],
 
-                    subscribe_topics=[{"topic_name": "music_gateway/sub/song_control", "qos": 1},
-                                      {"topic_name": "music_gateway/sub/find_song",    "qos": 1}])
+                    subscribe_topics=[{"topic_name": "music_gateway/sub/song_control", "qos": 1}])
 
     # init of the background daemon thread
     mqtt.run()
