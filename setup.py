@@ -12,7 +12,7 @@ setup(
     version="1.0",
     author="Bierschneider Christian",
     author_email="christian.bierschneider@web.de",
-    py_modules=["music_gateway"],
+    py_modules=["music_gateway", "definitions"],
     scripts=['scripts/music_gateway.sh'],
     packages=["music", "src", "src.communication", "src.player", "test"],
     package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
