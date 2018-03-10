@@ -69,7 +69,7 @@ fabric.properties
 /**/__pycache__/**
 
 #Project
-/**/music/songs/**
+/**/music/songs/*.mp3
 /**/music/mpd.log
 /**/music/mpd.db
 /**/music/mpd.conf
