@@ -1,0 +1,1 @@
+Put all your music in this folder
