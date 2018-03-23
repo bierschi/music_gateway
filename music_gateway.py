@@ -15,22 +15,31 @@ if verbose:
 else:
     log.basicConfig(format="%(levelname)s: %(message)s")
 
+
 def test():
     LoadMPD()
+
 
 def music_gateway():
     # load the mpd server depending on the operating system
     LoadMPD()
 
+    # load all settings in configuration.json
+    with open('configs/configuration.json') as json_file:
+        json_data = json.load(json_file)
+
     # create the MQTT instance to connect to remote broker
-    #mqtt = MQTT(host="mqtt.swifitch.cz", port=1883)
-    mqtt = MQTT(host="bierschneider.ddns.net", port=1883)
+    # mqtt = MQTT(host="mqtt.swifitch.cz", port=1883)
+    mqtt = MQTT(host=json_data['MQTT']['host'], port=int(json_data['MQTT']['port']),
+                username=json_data['MQTT']['username'], password=json_data['MQTT']['password'])
+
     mqtt.add_topics(publish_topics=[{"topic_name": "music_gateway/pub/database", "qos": 0},
-                                    {"topic_name": "music_gateway/pub/playback", "qos": 0}],
+                                    {"topic_name": "music_gateway/pub/playback", "qos": 0},
+                                    {"topic_name": "music_gateway/pub/gps"     , "qos": 0}],
 
                     subscribe_topics=[{"topic_name": "music_gateway/sub/song_control", "qos": 1}])
 
-    # init of the background daemon thread
+    # init of the background mqtt daemon thread
     mqtt.run()
 
     # create the MPD instance to localhost
