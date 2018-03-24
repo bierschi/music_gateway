@@ -1,9 +1,8 @@
-from src.player.control_mpd import ControlMPD, FindInDatabase
+from src.player.control_mpd import ControlMPD
 from src.player.connect_mpd import ConnectMPD
 
 import json
 import logging as log
-from time import sleep
 
 try:
     import paho.mqtt.client as mqtt
@@ -229,7 +228,6 @@ class MQTT(mqtt.Client):
         """
         # build a valid json_string
         try:
-            log.info("create json string")
             json_string = self.__create_json_string(msg)
         except TypeError as e:
             print(str(e))
@@ -250,7 +248,7 @@ class MQTT(mqtt.Client):
                     if pub_topics is not None:
                         for pub_topic in pub_topics:
                             if topic_name[i] in pub_topic.get('topic_name'):
-                                print(json_string)
+                                #print(json_string)
                                 self.client.publish(topic=pub_topic.get('topic_name'),
                                                     payload=json_string,
                                                     qos=pub_topic.get('qos'))
@@ -267,16 +265,13 @@ class MQTT(mqtt.Client):
 
     def subscribe_msgs(self, topic, msg):
         """
-
-        :return:
+        method is called on a on_message callback
         """
         log.info("topic:{}, msg: {}".format(topic, msg))
 
         if topic == 'music_gateway/sub/song_control':
             ControlMPD(self, self.mpdclient, json.loads(msg))
 
-        if topic == 'music_gateway/sub/find_song':
-            FindInDatabase(self.mpdclient, json.loads(msg))
 
 # CALLBACKS
 
@@ -289,8 +284,7 @@ class MQTT(mqtt.Client):
         :param flags: response flags sent by the broker
         :param rc: the connection result
         """
-        print("Connected to the remote broker")
-
+        log.info("connected to the remote broker")
         # subscribing in on_connect() means if we lose the connection and reconnect then subscription will be renewed.
         self.__subscribe_topics()
 
@@ -302,7 +296,7 @@ class MQTT(mqtt.Client):
         :param userdata: the private user data as set in Client() or userdata_set()
         :param rc: the disconnection result
         """
-        print("Disconnected from the remote broker")
+        log.info("disconnected from the remote broker")
 
     def on_message(self, client, userdata, msg):
         """
@@ -313,7 +307,7 @@ class MQTT(mqtt.Client):
         :param userdata: the private user data as set in Client() or userdata_set()
         :param msg: an instance of MQTTMessage. This is a class with memebers topic, payload, qos, retain
         """
-        print("On_message callback")
+        log.info("on_message callback")
         self.subscribe_msgs(msg.topic, str(msg.payload, 'utf-8'))
 
     def on_publish(self, client, userdata, mid):
@@ -325,7 +319,8 @@ class MQTT(mqtt.Client):
         :param mid: The mid variable matches the mid variable returned from the corresponding publish() call,
         to allow outgoing messages to be tracked
         """
-        print("On_publish callback")
+        log.info("on_publish callback")
+        print("on_publish callback")
 
     def on_subscribe(self, client, userdata, mid, granted_qos):
         """
@@ -337,7 +332,7 @@ class MQTT(mqtt.Client):
         :param granted_qos: The granted_qos variable is a list of integers that give the QoS level the broker has
         granted for each of the different subscription requests
         """
-        print("Remote broker responds the subscribe request")
+        log.info("remote broker responds the subscribe request")
 
     def on_unsubscribe(self, client, userdata, mid):
         """
@@ -347,7 +342,7 @@ class MQTT(mqtt.Client):
         :param userdata: the private user data as set in Client() or userdata_set()
         :param mid: matches the mid variable returned from the corresponding unsubscribe() call
         """
-        print("Unsubscribe topic")
+        log.info("unsubscribe topic")
 
 
 if __name__ == '__main__':
@@ -358,8 +353,3 @@ if __name__ == '__main__':
     mqtt.add_topics(publish_topics=[{"topic_name": "pub_bsp", "qos": 3}])
     print(mqtt.get_pub_topics())
     print(mqtt.get_sub_topics())
-
-    while True:
-        mqtt.publish_msgs(["hallo", "servus", {"abc": 3}], topic_name=['test2'])
-        mqtt.publish_msgs("sec: topic", topic_name=['pub_bsp'])
-        sleep(2)
