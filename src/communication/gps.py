@@ -181,8 +181,7 @@ class BaseConvert:
             time_cet_hours = int(time_utc_hours)
             time_cet_hours += 2
         else:
-            print(time_utc_hours)
-            time_cet_hours = time_utc_hours
+            time_cet_hours = int(time_utc_hours)
             time_cet_hours += 1
         time_minutes = time_utc[time_utc.find(".") - 4:time_utc.find(".") - 2]
         time_seconds = time_utc[time_utc.find(".") - 2:time_utc.find(".")]
