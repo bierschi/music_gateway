@@ -3,6 +3,8 @@
 from src.player.load_mpd import LoadMPD
 from src.communication.mqtt import MQTT
 from src.player.connect_mpd import ConnectMPD
+from src.communication.scan_serial import ScanSerial
+from src.communication.gps import GPS
 
 from time import sleep
 import logging as log
@@ -28,16 +30,21 @@ def music_gateway():
     with open('configs/configuration.json') as json_file:
         json_data = json.load(json_file)
 
+    # scan for available gps devices
+    gps_port = ScanSerial().get_gps_port()
+    if gps_port is not None:
+        gps = GPS(gps_port, nmea_type='GPGGA')
+
     # create the MQTT instance to connect to remote broker
     # mqtt = MQTT(host="mqtt.swifitch.cz", port=1883)
     mqtt = MQTT(host=json_data['MQTT']['host'], port=int(json_data['MQTT']['port']),
                 username=json_data['MQTT']['username'], password=json_data['MQTT']['password'])
 
-    mqtt.add_topics(publish_topics=[{"topic_name": "music_gateway/pub/database", "qos": 0},
-                                    {"topic_name": "music_gateway/pub/playback", "qos": 0},
-                                    {"topic_name": "music_gateway/pub/gps"     , "qos": 0}],
+    mqtt.add_topics(publish_topics=[{"topic_name": json_data['TOPIC_NAME']['topic'] + "/pub/database", "qos": 0},
+                                    {"topic_name": json_data['TOPIC_NAME']['topic'] + "/pub/playback", "qos": 0},
+                                    {"topic_name": json_data['TOPIC_NAME']['topic'] + "/pub/gps"     , "qos": 0}],
 
-                    subscribe_topics=[{"topic_name": "music_gateway/sub/song_control", "qos": 1}])
+                    subscribe_topics=[{"topic_name": json_data['TOPIC_NAME']['topic'] + "/sub/song_control", "qos": 1}])
 
     # init of the background mqtt daemon thread
     mqtt.run()
@@ -45,18 +52,27 @@ def music_gateway():
     # create the MPD instance to localhost
     mpdclient = ConnectMPD("localhost", 6600)
     # query all songs in database
-    mqtt.publish_msgs(mpdclient.get_all_songs_in_db(), topic_name=['music_gateway/pub/database'])
+    mqtt.publish_msgs(mpdclient.get_all_songs_in_db(), topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/database'])
 
     #mpdclient.create_music_playlist()
     #mpdclient.clear_current_playlist()
 
     while True:
+
         song_playlist = mpdclient.get_current_song_playlist()
         player_status = mpdclient.get_player_status()
         current_song = mpdclient.get_current_song()
         mqtt.publish_msgs({'current_song': current_song, 'song_playlist': song_playlist, 'player_status': player_status},
-                          topic_name=['music_gateway/pub/playback'])
-        sleep(1)
+                          topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/playback'])
+        if gps_port is not None:
+            gps_data = gps.get_converted_data_dict()
+            time_cet = gps_data['time_cet']
+            longitude = gps_data['longitude']
+            latitude = gps_data['latitude']
+            mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude}},
+                              topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/gps'])
+        else:
+            sleep(1)
 
 
 if __name__ == '__main__':
