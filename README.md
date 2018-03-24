@@ -7,6 +7,10 @@ clone this repository:
 
 `git clone https://github.com/bierschi/music_gateway.git`
 
+and:
+
+`cd music_gateway`
+
 install the project with `setup.py`:
 
 `python3 setup.py install`
@@ -19,12 +23,12 @@ Windows (python version 3.5):
 
 Download a mqtt client like MQTT.FX http://mqttfx.jensd.de/index.php/download
 
-#### Subscribe following `publish_topics` to see all songs in database and the current playback state
+#### Subscribe following `publish_topics` to see all songs in database, the current playback state and gps data if a gps sensor is connected
 
 publish_topics:
 - `music_gateway/pub/database` <br>
-- `music_gateway/pub/playback`
-
+- `music_gateway/pub/playback` <br>
+- `music_gateway/pub/gps`
 #### Publish the following actions on this topic:
 
 subscribe_topics:
@@ -59,6 +63,24 @@ This commands are working:
 
 **commands will later be replaced by an APP!**
 
+## settings in file `configuration.json`
+
+example settings for a public broker. `topic` can be any desired string
+
+<pre><code>
+{
+  "MQTT": {
+    "host"    : "mqtt.swifitch.cz",
+    "port"    : "1883",
+    "username": "",
+    "password": ""
+  },
+  "TOPIC_NAME":{
+    "topic"    : "music_gateway"
+  }
+}
+</pre></code>
+
 ## Windows
 
 ## Linux
@@ -87,6 +109,7 @@ This commands are working:
         gps.py
         gsm.py
         mqtt.py
+        scan_serial.py
     /player
         connect_mpd.py
         control_mpd.py
@@ -100,9 +123,9 @@ This commands are working:
     test_control_mpd.py
     test_load_mpd.py
 
+definitions.py
 LICENSE
 music_gateway.py
-definitions.py
 README.md
 requirements.txt
 setup.py
