@@ -40,7 +40,7 @@ class MQTT(mqtt.Client):
             else:
                 raise TypeError("port must be an integer")
 
-        if username is None:
+        if username is None or username == "":
             self._username = username
             self._password = password
         else:
