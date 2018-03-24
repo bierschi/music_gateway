@@ -1,6 +1,6 @@
 
 
-class ControlMPD():
+class ControlMPD:
 
     def __init__(self, mqtt_c, mpd_c, msg):
         """
@@ -94,32 +94,3 @@ class ControlMPD():
                 self.mpdclient.add_song_to_playlist(song['file'])
                 break
 
-
-
-
-
-
-class FindInDatabase:
-
-    def __init__(self, mpdclient, msg):
-        """
-
-        :param mpdclient:
-        :param msg:
-        """
-        self.mpdclient = mpdclient
-        self.msg = msg
-
-        if isinstance(msg, list):
-            for song in msg:
-                #self.artist = song.get('artist')
-                #self.title = song.get('title')
-                self.find_in_database(song.get('title'))
-
-    def find_in_database(self, title):
-        """
-
-        :return:
-        """
-        d = self.mpdclient.advanced_search_in_db(title)
-pass
