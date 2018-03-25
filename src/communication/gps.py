@@ -1,5 +1,5 @@
 import serial
-from time import gmtime
+from time import localtime
 
 
 class GPS:
@@ -177,7 +177,7 @@ class BaseConvert:
         time_utc = self.time_utc
         time_utc_hours = time_utc[time_utc.find(".") - 6:time_utc.find(".") - 4]
 
-        if gmtime().tm_isdst:
+        if localtime().tm_isdst:
             time_cet_hours = int(time_utc_hours)
             time_cet_hours += 2
         else:
