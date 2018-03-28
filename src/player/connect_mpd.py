@@ -523,7 +523,7 @@ class ConnectMPD:
         all_songs = self.get_all_songs_in_db()
         with open("Lieder.txt", 'w', encoding='utf-8') as file:
             for song in all_songs:
-                file.writelines(song['file'] + "\n")
+                file.writelines(song + "\n")
 
 
 if __name__ == "__main__":
@@ -531,5 +531,5 @@ if __name__ == "__main__":
     mpdclient = ConnectMPD("localhost", 6600)
     #print(mpdclient.get_current_song_playlist())
     #print(mpdclient.get_all_songs_in_db())
-    #mpdclient.test()
+    mpdclient.test()
     #mpdclient.stop()
