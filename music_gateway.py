@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 from src.player.load_mpd import LoadMPD
-from src.communication.mqtt import MQTT
 from src.player.connect_mpd import ConnectMPD
+from src.communication.mqtt import MQTT
 from src.communication.scan_serial import ScanSerial
 from src.communication.gps import GPS
+from src.communication.internet_connection import InternetConnection
 
 from time import sleep
 import logging as log
@@ -54,9 +55,6 @@ def music_gateway():
     # query all songs in database
     mqtt.publish_msgs(mpdclient.get_all_songs_in_db(), topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/database'])
 
-    #mpdclient.create_music_playlist()
-    #mpdclient.clear_current_playlist()
-
     while True:
 
         song_playlist = mpdclient.get_current_song_playlist()
@@ -67,9 +65,12 @@ def music_gateway():
         if gps_port is not None:
             gps_data = gps.get_converted_data_dict()
             time_cet = gps_data['time_cet']
-            longitude = gps_data['longitude']
-            latitude = gps_data['latitude']
-            mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude}},
+            longitude, latitude = gps_data['longitude'], gps_data['latitude']
+            nmea_type, heigth_over_msl, number_of_sat = gps_data['nmea_type'], gps_data['height_over_msl'], gps_data['number_of_satellites']
+
+            mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude,
+                                            'nmea_dataformat': nmea_type, 'height_over_msl': heigth_over_msl,
+                                            'number_of_sat': number_of_sat}},
                               topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/gps'])
         else:
             sleep(1)
