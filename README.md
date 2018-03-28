@@ -63,7 +63,7 @@ This commands are working:
 
 **commands will later be replaced by an APP!**
 
-## settings in file `configuration.json`
+## Settings in file `configuration.json`
 
 example settings for a public broker. `topic` can be any desired string
 
