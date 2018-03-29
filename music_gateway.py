@@ -64,8 +64,11 @@ def music_gateway():
                           topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/playback'])
         if gps_port is not None:
             gps_data = gps.get_converted_data_dict()
+            # time
             time_cet = gps_data['time_cet']
+            # coordinates
             longitude, latitude = gps_data['longitude'], gps_data['latitude']
+            # other infos
             nmea_type, heigth_over_msl, number_of_sat = gps_data['nmea_type'], gps_data['height_over_msl'], gps_data['number_of_satellites']
 
             mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude,
