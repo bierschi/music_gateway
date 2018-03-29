@@ -5,6 +5,14 @@ except ImportError:
     from distutils.core import setup
     from distutils.command.install import install
 
+from src.settings import Settings
+
+
+class PostInstallCommand(install):
+    def run(self):
+        Settings()
+        install.run(self)
+
 
 setup(
     name="music_gateway",
@@ -17,7 +25,7 @@ setup(
     packages=["music", "src", "src.communication", "src.player", "test"],
     package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
     install_requires=["psutil", "paho-mqtt", "python-mpd2", "pyserial"],
-    #cmdclass={
-    #    'install': PostInstallCommand
-    #}
+    cmdclass={
+        'install': PostInstallCommand
+    }
 )
