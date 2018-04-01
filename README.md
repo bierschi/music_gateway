@@ -19,7 +19,7 @@ install the project with `setup.py` (python version 3.5, change this value with 
 
 Enter the correct parameters for the `configuration.json` file
 
-<div align="center">
+<div align="left">
   <br>
   <img src="pictures/public_broker_settings.png" alt="example" width="250" height="200">
 </div>
@@ -40,7 +40,7 @@ install the project with `setup.py`:
 
 Enter the correct parameters for the `configuration.json` file
 
-<div align="center">
+<div align="left">
   <br>
   <img src="pictures/public_broker_settings.png" alt="example" width="250" height="200">
 </div>
