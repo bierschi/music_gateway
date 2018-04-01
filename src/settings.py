@@ -11,6 +11,7 @@ class Settings:
     def __init__(self):
         self.fields = 'host', 'port', 'username', 'password', 'topic_name'
         self.root = Tk()
+        self.root.title("music_gateway")
         self.root.geometry("350x250")
         self.root.resizable(0, 0)
         self.center(self.root)
