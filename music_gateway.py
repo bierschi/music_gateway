@@ -7,6 +7,7 @@ from src.communication.scan_serial import ScanSerial
 from src.communication.gps import GPS
 from src.communication.internet_connection import InternetConnection
 
+from serial import SerialException
 from time import sleep
 import logging as log
 import json
@@ -63,18 +64,23 @@ def music_gateway():
         mqtt.publish_msgs({'current_song': current_song, 'song_playlist': song_playlist, 'player_status': player_status},
                           topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/playback'])
         if gps_port is not None:
-            gps_data = gps.get_converted_data_dict()
-            # time
-            time_cet = gps_data['time_cet']
-            # coordinates
-            longitude, latitude = gps_data['longitude'], gps_data['latitude']
-            # other infos
-            nmea_type, heigth_over_msl, number_of_sat = gps_data['nmea_type'], gps_data['height_over_msl'], gps_data['number_of_satellites']
+            try:
+                gps_data = gps.get_converted_data_dict()
+                # time
+                time_cet = gps_data['time_cet']
+                # coordinates
+                longitude, latitude = gps_data['longitude'], gps_data['latitude']
+                # other infos
+                nmea_type, heigth_over_msl, number_of_sat = gps_data['nmea_type'], gps_data['height_over_msl'], gps_data['number_of_satellites']
 
-            mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude,
-                                            'nmea_dataformat': nmea_type, 'height_over_msl': heigth_over_msl,
-                                            'number_of_sat': number_of_sat}},
-                              topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/gps'])
+                mqtt.publish_msgs({'gps_data': {'time': time_cet, 'longitude': longitude, 'latitude': latitude,
+                                                'nmea_dataformat': nmea_type, 'height_over_msl': heigth_over_msl,
+                                                'number_of_sat': number_of_sat}},
+                                  topic_name=[json_data['TOPIC_NAME']['topic'] + '/pub/gps'])
+            except SerialException as e:
+                log.info(e)
+                gps_port = None
+
         else:
             sleep(1)
 
