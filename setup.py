@@ -4,14 +4,21 @@ try:
 except ImportError:
     from distutils.core import setup
     from distutils.command.install import install
-
+import platform
 from src.settings import Settings
+from subprocess import call
 
 
 class PostInstallCommand(install):
+
     def run(self):
-        Settings()
-        install.run(self)
+        system, machine = platform.system(), platform.machine()
+        if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+            Settings()
+            install.run(self)
+        elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
+            call(['scripts/linux_settings.sh'])
+            install.run(self)
 
 
 setup(
@@ -27,5 +34,8 @@ setup(
     install_requires=["psutil", "paho-mqtt", "python-mpd2", "pyserial"],
     cmdclass={
         'install': PostInstallCommand
-    }
+    },
 )
+
+
+
