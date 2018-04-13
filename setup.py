@@ -17,8 +17,10 @@ class PostInstallCommand(install):
             Settings()
             install.run(self)
         elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-            call(['scripts/linux_settings.sh'])
             install.run(self)
+            call('pip3 install -r requirements.txt'.split())
+            call(['scripts/linux_settings.sh'])
+
 
 
 setup(
@@ -28,7 +30,7 @@ setup(
     author="Bierschneider Christian",
     author_email="christian.bierschneider@web.de",
     py_modules=["music_gateway", "definitions"],
-    scripts=['scripts/music_gateway.sh'],
+    scripts=['scripts/music_gateway.sh', 'scripts/linux_settings.sh'],
     packages=["music", "src", "src.communication", "src.player", "test"],
     package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
     install_requires=["psutil", "paho-mqtt", "python-mpd2", "pyserial"],

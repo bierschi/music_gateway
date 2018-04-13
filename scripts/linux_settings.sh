@@ -8,6 +8,8 @@ read -p "please enter the username: " username
 read -p "please enter the password: " password
 read -p "please enter the topic: " topic
 
+mkdir configs #TODO check if configs is already existing
+
 cat <<EOF > configs/configuration.json
 {
     "TOPIC_NAME": {
