@@ -140,7 +140,7 @@ This commands are working:
 {"delete_song": "Nano - Hold On(Official Audio).mp3"}
 </pre></code>
 
-`add_song`: adds a song from the database into current playlist, song must available in `music_gateway/pub/database`
+`add_song`: adds a song from the database into current playlist, song must be available in `music_gateway/pub/database`
 
 `desired_song`: select the desired song from the current playlist
 
