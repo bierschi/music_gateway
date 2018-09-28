@@ -5,7 +5,8 @@ except ImportError:
     from distutils.core import setup
     from distutils.command.install import install
 import platform
-from src.settings import Settings
+#from src.settings import Settings
+from src.visualization.conf_app import ConfApp
 from subprocess import call
 
 
@@ -14,12 +15,13 @@ class PostInstallCommand(install):
     def run(self):
         system, machine = platform.system(), platform.machine()
         if system == "Windows" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
-            Settings()
+            app = ConfApp()
             install.run(self)
         elif system == "Linux" and machine in {"i686", "i786", "x86", "x86_64", "AMD64"}:
             install.run(self)
+            app = ConfApp()
             call('pip3 install -r requirements.txt'.split())
-            call(['scripts/linux_settings.sh'])
+            #call(['scripts/linux_settings.sh'])
 
 
 
@@ -33,7 +35,7 @@ setup(
     scripts=['scripts/music_gateway.sh', 'scripts/linux_settings.sh'],
     packages=["music", "src", "src.communication", "src.player", "test"],
     package_data={'music': ['mpd.exe', 'songs/*.txt', 'radio_playlists/*.m3u']},
-    install_requires=["psutil", "paho-mqtt", "python-mpd2", "pyserial"],
+    install_requires=["psutil", "paho-mqtt", "python-mpd2", "pyserial", "PyQt5"],
     cmdclass={
         'install': PostInstallCommand
     },
